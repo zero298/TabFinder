@@ -1,0 +1,34 @@
+{
+   "extensionName": {
+      "message": "Onglet Découvreur",
+      "description": "Le nom de l'extension."
+   },
+   "extensionDescription": {
+      "message": "Trouver un onglet avec un titre spécifique.",
+      "description": "La description de l'extension."
+   },
+   "instruction": {
+      "message": "Entrez le titre de recherche.",
+      "description": "Le mot à rechercher les titres de."
+   },
+   "saveComplete": {
+      "message": "Options Enregistrées",
+      "description": "Message lorsque les options sont enregistrées"
+   },
+   "caseSensitiveInstruction": {
+      "message": "Soyez sensible à la casse",
+      "description": "Instruction pour sélectionner la casse"
+   },
+   "yesOption": {
+      "message": "Oui",
+      "description": "Oui l'option"
+   },
+   "noOption": {
+      "message": "No",
+      "description": "No l'option"
+   },
+   "saveButtonText": {
+      "message": "Enregistrer les Paramètres",
+      "description": "Qu'est-ce que le bouton de sauvegarde fera"
+   }
+}

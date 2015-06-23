@@ -1,0 +1,34 @@
+{
+   "extensionName": {
+      "message": "Tab Finder",
+      "description": "The name of the extension."
+   },
+   "extensionDescription": {
+      "message": "Search through tabs for title.",
+      "description": "The description of the extension."
+   },
+   "instruction": {
+      "message": "Enter Title to Search.",
+      "description": "The string to search all tab titles for."
+   },
+   "saveComplete": {
+      "message": "Options Saved",
+      "description": "Message when options are saved"
+   },
+   "caseSensitiveInstruction": {
+      "message": "Be Case Sensitive",
+      "description": "Instruction to select case sensitivity"
+   },
+   "yesOption": {
+      "message": "Yes",
+      "description": "Yes option"
+   },
+   "noOption": {
+      "message": "No",
+      "description": "No option"
+   },
+   "saveButtonText": {
+      "message": "Save Settings",
+      "description": "What the save button will do"
+   }
+}
