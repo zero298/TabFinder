@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <script src="../js/options.js"></script>
-      <link rel="stylesheet" href="../css/options.css">
-      <title>Options</title>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-   </head>
-   <body>
-      <img src="../img/icon128.png">
-      <div id="caseSensitiveSelect_option">Be case sensitive</div>
-      <select id="caseSensitiveSelect">
-         <option id="yes_option" value="yes">Yes</option>
-         <option id="no_option" value="no">No</option>
-      </select>
-      <button id="save">Save Settings</button>
-      <div id="status"></div>
-   </body>
+    <head>
+        <link rel="stylesheet" href="../css/tabfinder.css">
+        <script src="../js/tabfinder.js"></script>
+        <title>Options</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body id="tabfinder-options" class="tabfinder">
+        <img alt="Options" src="../img/icon128.png">
+        <ul>
+            <li>
+                <label for="caseSensitiveCheckbox">Be case sensitive</label>
+                <input id="caseSensitiveCheckbox" type="checkbox">
+            </li>
+            <li>
+                <button id="saveOptionsButton" type="button">Save Settings</button>
+            </li>
+        </ul>
+        <div id="optionsStatus"></div>
+    </body>
 </html>

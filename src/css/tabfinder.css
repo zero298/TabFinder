@@ -1,13 +1,13 @@
 *{
-   font-family: Arial;
+    font-family: Arial;
 }
 
 div{
-   width: 300px;
-   white-space: nowrap;
-   overflow: hidden;
+    width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 input{
-   width: 300px;
+    width: 300px;
 }

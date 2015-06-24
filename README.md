@@ -1,4 +1,5 @@
 # TabFinder
+
 Chrome extension to help you find tabs by name.
 
 ## What options are supported?
