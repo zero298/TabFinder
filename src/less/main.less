@@ -5,6 +5,12 @@ body.tabfinder {
             white-space: nowrap;
             overflow: hidden;
         }
+        
+        div#foundTabsDiv {
+            &> div.foundTab:nth-child(even) {
+                background-color: #eeeeee;
+            }
+        }
 
         input{
             width: 300px;

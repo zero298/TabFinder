@@ -1,5 +1,5 @@
-/* jshint undef: true, unused: true */
-/* global document, localstorage, chrome, console */
+/*jslint white: true*/
+/*global document, localStorage, chrome, console, setTimeout*/
 
 /**
  * TabFinder namespace
@@ -7,8 +7,32 @@
  * @param {Object} locstore Local Storage wrapper
  * @param {Object} chr Chrome wrapper
  * @param {Object} consl Console wrapper
+ * @param {Object} timeout Timeout wrapper
  */
-(function (doc, locstore, chr, consl) {
+(function (doc, locstore, chr, consl, timeout) {
+
+    "use strict";
+
+    /**
+     * Function to have chrome focus a tab
+     * @function focusTab
+     * @memberOf TabFinder
+     * @param {Event} e Some event that may have happened
+     */
+    function focusTab(e) {
+        // If we have a keycode
+        if (e && e.keyCode) {
+            // Only let "enter" work
+            if (e.keyCode !== 13) {
+                // Otherwise just return
+                return;
+            }
+        }
+        // Make the tab selected
+        chr.tabs.update(parseInt(this.dataset.tabToSwitchTo, 10), {
+            selected: true
+        });
+    }
 
     /**
      * Creates a new TabSearch
@@ -23,7 +47,7 @@
          * @member {HTMLElement} TabFinder.TabSearch#inputField
          */
         this.inputField = (inputField || null);
-        
+
         /**
          * The element to put references to found tabs in
          * @member {HTMLElement} TabFinder.TabSearch#searchResultsContainer
@@ -42,10 +66,28 @@
                 // Focus on field
                 this.inputField.focus();
 
-                this.inputField.addEventListener("keydown", this.search.bind(this));
+                this.inputField.addEventListener("keydown", this.handleKeys.bind(this));
             }
             else {
                 consl.log("Missing component");
+            }
+        },
+        /**
+         * Function to handle keypresses in the search box
+         * @method TabFinder.handleKeys#init
+         * @param {KeyboardEvent} keyEvent The keydown event
+         */
+        handleKeys: function (keyEvent) {
+            switch (keyEvent.keyCode) {
+                case 9: // Tab
+                    break;
+                case 38: // Up
+                    break;
+                case 40: //Down
+                    break;
+                default:
+                    this.search();
+                    break;
             }
         },
         /**
@@ -53,7 +95,7 @@
          * @method TabFinder.TabSearch#setLocaleText
          */
         setLocaleText: function () {
-            doc.getElementById("instructions").innerHTML = chr.i18n.getMessage("instruction");
+            this.inputField.labels[0].innerHTML = chr.i18n.getMessage("instruction");
         },
         /**
          * Add a result to the result container
@@ -81,17 +123,18 @@
         createResultDiv: function (result) {
             // Create a new div
             var tabDiv = doc.createElement("div");
+            // Set the class of the new div
+            tabDiv.className = "foundTab";
+            // Allow it to be selectable
+            tabDiv.tabIndex = 0;
             // Set its content to the tabs title
             tabDiv.innerHTML = result.title;
             // Let it know what the tabs id is
-            tabDiv.tabToSwitchTo = result.id;
+            tabDiv.dataset.tabToSwitchTo = result.id;
+
             // Allow for users to click on the representing div to switch to it
-            tabDiv.onclick = function () {
-                // Make the tab selected
-                chr.tabs.update(this.tabToSwitchTo, {
-                    selected: true
-                });
-            };
+            tabDiv.addEventListener("click", focusTab.bind(tabDiv));
+            tabDiv.addEventListener("keydown", focusTab.bind(tabDiv));
 
             // Give back the created resultant div
             return tabDiv;
@@ -129,7 +172,10 @@
          * @method TabFinder.TabSearch#search
          */
         search: function () {
+            // Clear our result div
             this.clearResultDiv();
+
+            // Have Chrome get all the tabs
             chr.tabs.query({
                 title: ""
             }, this.handleResults.bind(this));
@@ -199,14 +245,23 @@
         save: function () {
             locstore.setItem("case_sensing", this.caseSensitiveCheckbox.checked);
             this.statusElement.innerHTML = chr.i18n.getMessage("saveComplete");
-            setTimeout(this.clearStatus.bind(this), 1000);
+            timeout(this.clearStatus.bind(this), 1000);
         },
         /**
          * Restore our option settings
          * @method TabFinder.TabOptions#restore
          */
         restore: function () {
-            this.caseSensitiveCheckbox.checked = (locstore.getItem("case_sensing") === "true" ? true : false);
+            // Get whether we should be case sensitive or not
+            var storeCaseSensitive = locstore.getItem("case_sensing");
+
+            // Local storage stores as a string so we need to "convert" it
+            if (storeCaseSensitive === "true") {
+                this.caseSensitiveCheckbox.checked = true;
+            }
+            else {
+                this.caseSensitiveCheckbox.checked = false;
+            }
         }
     };
     TabOptions.constructor = TabOptions;
@@ -219,10 +274,14 @@
     function initMain() {
         var
                 inputField = doc.getElementById("textToSearchInput"),
-                queryAnswerDiv = doc.getElementById("foundTabsDiv");
+                queryAnswerDiv = doc.getElementById("foundTabsDiv"),
+                tabsearch = null;
 
         // Initialize a search handler
-        new TabSearch(inputField, queryAnswerDiv).init();
+        tabsearch = new TabSearch(inputField, queryAnswerDiv).init();
+
+        // Return our tabsearch
+        return tabsearch;
     }
 
     /**
@@ -234,10 +293,14 @@
         var
                 caseCheckbox = doc.getElementById("caseSensitiveCheckbox"),
                 saveButton = doc.getElementById("saveOptionsButton"),
-                statusDiv = doc.getElementById("optionsStatus");
+                statusDiv = doc.getElementById("optionsStatus"),
+                taboptions = null;
 
         // Init tab options
-        new TabOptions(caseCheckbox, saveButton, statusDiv).init();
+        taboptions = new TabOptions(caseCheckbox, saveButton, statusDiv).init();
+
+        // Return our taboptions
+        return taboptions;
     }
 
     /**
@@ -277,4 +340,4 @@
     // Start the TabFinder
     TabFinder.init();
 
-}(document, localStorage, chrome, console));
+}(document, localStorage, chrome, console, setTimeout));

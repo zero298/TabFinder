@@ -1,5 +1,17 @@
 body.tabfinder {
     font-family: Arial;
+
+    ul,
+    ol{
+        &.noDecorate{
+            padding: 0px;
+            margin: 0px;
+
+            li{
+                list-style-type: none;
+            }
+        }
+    }
 }
 
 @import "main.less";
