@@ -1,0 +1,9 @@
+body.tabfinder#tabfinder-main div {
+  width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+body.tabfinder#tabfinder-main input {
+  width: 300px;
+}
+/*# sourceMappingURL=main.css.map */
