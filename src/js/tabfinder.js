@@ -1,5 +1,5 @@
 /*jslint white: true*/
-/*global document, localStorage, chrome, console, setTimeout*/
+/*global document, chrome, console, setTimeout*/
 
 /**
  * TabFinder namespace
@@ -9,7 +9,7 @@
  * @param {Object} consl Console wrapper
  * @param {Object} timeout Timeout wrapper
  */
-(function (doc, locstore, chr, consl, timeout) {
+(function (doc, chr, consl, timeout) {
 
     "use strict";
 
@@ -67,8 +67,7 @@
                 this.inputField.focus();
 
                 this.inputField.addEventListener("keydown", this.handleKeys.bind(this));
-            }
-            else {
+            } else {
                 consl.log("Missing component");
             }
         },
@@ -79,15 +78,15 @@
          */
         handleKeys: function (keyEvent) {
             switch (keyEvent.keyCode) {
-                case 9: // Tab
-                    break;
-                case 38: // Up
-                    break;
-                case 40: //Down
-                    break;
-                default:
-                    this.search();
-                    break;
+            case 9: // Tab
+                break;
+            case 38: // Up
+                break;
+            case 40: //Down
+                break;
+            default:
+                this.search();
+                break;
             }
         },
         /**
@@ -142,15 +141,16 @@
         /**
          * Check the result to see if it is what we are looking for
          * @method TabFinder.TabSearch#checkResult
+         * @param {Boolean} caseSensitive whether the check should be case sensitive
          * @param {Tab} result The chrome tab to check
          */
-        checkResult: function (result) {
+        checkResult: function (caseSensitive, result) {
             var
-                    tabTitle = result.title,
-                    queryText = this.inputField.value;
+                tabTitle = result.title,
+                queryText = this.inputField.value;
 
-            // If we don't care about case sensative, make bother lower case
-            if (locstore.getItem("case_sensing") === "false") {
+            // If we don't care about case sensative, make both lower case
+            if (!caseSensitive) {
                 queryText = queryText.toLocaleLowerCase();
                 tabTitle = tabTitle.toLocaleLowerCase();
             }
@@ -165,7 +165,11 @@
          * @param {type} results The chrome tabs to check
          */
         handleResults: function (results) {
-            results.forEach(this.checkResult.bind(this));
+            chr.storage.sync.get({
+                caseSensitive: false
+            }, function (settings) {
+                results.forEach(this.checkResult.bind(this, settings.caseSensitive));
+            }.bind(this));
         },
         /**
          * Search for tabs
@@ -218,8 +222,7 @@
                 this.setLocaleText();
                 this.restore();
                 this.saveButton.addEventListener("click", this.save.bind(this));
-            }
-            else {
+            } else {
                 consl.log("Missing component");
             }
         },
@@ -243,9 +246,13 @@
          * @method TabFinder.TabOptions#save
          */
         save: function () {
-            locstore.setItem("case_sensing", this.caseSensitiveCheckbox.checked);
-            this.statusElement.innerHTML = chr.i18n.getMessage("saveComplete");
-            timeout(this.clearStatus.bind(this), 1000);
+            var caseSensitive = this.caseSensitiveCheckbox.checked;
+            chr.storage.sync.set({
+                caseSensitive: caseSensitive
+            }, function () {
+                this.statusElement.innerHTML = chr.i18n.getMessage("saveComplete");
+                timeout(this.clearStatus.bind(this), 1000);
+            }.bind(this));
         },
         /**
          * Restore our option settings
@@ -253,15 +260,16 @@
          */
         restore: function () {
             // Get whether we should be case sensitive or not
-            var storeCaseSensitive = locstore.getItem("case_sensing");
-
-            // Local storage stores as a string so we need to "convert" it
-            if (storeCaseSensitive === "true") {
-                this.caseSensitiveCheckbox.checked = true;
-            }
-            else {
-                this.caseSensitiveCheckbox.checked = false;
-            }
+            chr.storage.sync.get({
+                caseSensitive: false
+            }, function (settings) {
+                // Local storage stores as a string so we need to "convert" it
+                if (settings.caseSensitive) {
+                    this.caseSensitiveCheckbox.checked = true;
+                } else {
+                    this.caseSensitiveCheckbox.checked = false;
+                }
+            }.bind(this));
         }
     };
     TabOptions.constructor = TabOptions;
@@ -273,9 +281,9 @@
      */
     function initMain() {
         var
-                inputField = doc.getElementById("textToSearchInput"),
-                queryAnswerDiv = doc.getElementById("foundTabsDiv"),
-                tabsearch = null;
+            inputField = doc.getElementById("textToSearchInput"),
+            queryAnswerDiv = doc.getElementById("foundTabsDiv"),
+            tabsearch = null;
 
         // Initialize a search handler
         tabsearch = new TabSearch(inputField, queryAnswerDiv).init();
@@ -291,10 +299,10 @@
      */
     function initOptions() {
         var
-                caseCheckbox = doc.getElementById("caseSensitiveCheckbox"),
-                saveButton = doc.getElementById("saveOptionsButton"),
-                statusDiv = doc.getElementById("optionsStatus"),
-                taboptions = null;
+            caseCheckbox = doc.getElementById("caseSensitiveCheckbox"),
+            saveButton = doc.getElementById("saveOptionsButton"),
+            statusDiv = doc.getElementById("optionsStatus"),
+            taboptions = null;
 
         // Init tab options
         taboptions = new TabOptions(caseCheckbox, saveButton, statusDiv).init();
@@ -316,14 +324,14 @@
                 body = body[0];
 
                 switch (body.id) {
-                    case "tabfinder-main":
-                        initMain();
-                        break;
-                    case "tabfinder-options":
-                        initOptions();
-                        break;
-                    default :
-                        consl.log("Unknown page");
+                case "tabfinder-main":
+                    initMain();
+                    break;
+                case "tabfinder-options":
+                    initOptions();
+                    break;
+                default:
+                    consl.log("Unknown page");
                 }
             }
         });
@@ -340,4 +348,4 @@
     // Start the TabFinder
     TabFinder.init();
 
-}(document, localStorage, chrome, console, setTimeout));
+}(document, chrome, console, setTimeout));

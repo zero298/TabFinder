@@ -2,11 +2,14 @@
     "manifest_version": 2,
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionName__",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "author": "zero298",
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
-    "options_page": "html/options.html",
+    "options_ui": {
+        "page": "html/options.html",
+        "chrome_style": true
+    },
     "icons": {
         "16": "img/icon16.png",
         "48": "img/icon48.png",
@@ -21,6 +24,7 @@
         "default_popup": "html/tabfinder.html"
     },
     "permissions": [
-        "tabs"
+        "tabs",
+        "storage"
     ]
 }
